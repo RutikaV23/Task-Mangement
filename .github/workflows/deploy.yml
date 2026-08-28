@@ -1,0 +1,59 @@
+name: Deploy Task Management
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci --omit=dev
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            cd /home/teknotantra-task-api/Task-Mangement
+
+            git pull origin main
+
+            cd backend
+            npm ci --omit=dev
+
+            pm2 restart task-management-api
+
+            cd ../frontend
+            npm ci
+            npm run build
+
+            rm -rf /home/teknotantra-task/htdocs/task.teknotantra.com/*
+            cp -r dist/* /home/teknotantra-task/htdocs/task.teknotantra.com/
+
+            pm2 save
+
+            curl -f http://localhost:5001/api/health
