@@ -11,6 +11,7 @@ function Tasks() {
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [message, setMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchTasks();
@@ -75,6 +76,14 @@ function Tasks() {
     setShowForm(false);
   }
 
+  const filteredTasks = tasks.filter((task) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      task.title.toLowerCase().includes(term) ||
+      (task.description && task.description.toLowerCase().includes(term))
+    );
+  });
+
   if (loading) return <Loading />;
 
   return (
@@ -103,13 +112,28 @@ function Tasks() {
         />
       )}
 
+      {tasks.length > 0 && (
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search tasks by title or description..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      )}
+
       {tasks.length === 0 ? (
         <div className="empty-state">
           <p>No tasks yet. Click "New Task" to create one.</p>
         </div>
+      ) : filteredTasks.length === 0 ? (
+        <div className="empty-state">
+          <p>No tasks found.</p>
+        </div>
       ) : (
         <div className="task-grid">
-          {tasks.map((task) => (
+          {filteredTasks.map((task) => (
             <TaskCard
               key={task.id}
               task={task}

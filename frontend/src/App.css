@@ -429,7 +429,26 @@ h2 {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .task-grid {
+.search-bar {
+  margin-bottom: 24px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: var(--sans);
+  transition: border-color 0.2s;
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.task-grid {
     grid-template-columns: 1fr;
   }
 
