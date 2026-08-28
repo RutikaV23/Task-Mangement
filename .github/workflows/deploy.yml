@@ -51,8 +51,8 @@ jobs:
             npm ci
             npm run build
 
-            rm -rf /home/teknotantra-task/htdocs/task.teknotantra.com/*
-            cp -r dist/* /home/teknotantra-task/htdocs/task.teknotantra.com/
+            rm -rf /home/teknotantra-task/htdocs/*
+            cp -r dist/* /home/teknotantra-task/htdocs/
 
             pm2 save
 
